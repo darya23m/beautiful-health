@@ -1,0 +1,14 @@
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.productsList {
+  max-width: 1024px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 40px;
+  color: #000000;
+  margin: 0 auto 70px;
+}
