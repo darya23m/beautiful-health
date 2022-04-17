@@ -7,6 +7,8 @@ import styles from './YourOrdersPage.module.scss';
 const YourOrdersPage = () => {
   const { data = [] } = useGetOrdersQuery();
 
+  console.log(data);
+
   const renderOrders = () =>
     data.map((order, index) => {
       let result = order.items.map(a => a.totalPrice);

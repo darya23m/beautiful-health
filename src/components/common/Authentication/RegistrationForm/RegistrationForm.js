@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
+import { Navigate } from "react-router-dom";
+import { useRegisterMutation } from '../../../../features/users/usersApi';
 
-import styles from './OrderForm.module.scss';
+import styles from './RegistrationForm.module.scss';
 import cx from 'classnames';
 
-const OrderForm = ({ onSuccess }) => {
+const RegistrationForm = () => {
+  const [register] = useRegisterMutation();
+  const [success, setSuccess] = useState(false);
+
   const [name, setName] = useState("");
-  const [contact, setContact] = useState("");
   const [email, setEmail] = useState("");
-  const [selected, setSelected] = useState("Безналичный расчет");
+  const [password, setPassword] = useState("");
 
   const [isNameValid, setIsNameValid] = useState(false);
-  const [isContactValid, setIsContactValid] = useState(false);
   const [isEmailValid, setIsEmailValid] = useState(false);
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [nameErrors, setNameErrors] = useState([]);
-  const [contactErrors, setContactErrors] = useState([]);
   const [emailErrors, setEmailErrors] = useState([]);
-
-  const handleChange = (e) => {
-    setSelected(e.target.value);
-  }
+  const [passwordErrors, setPasswordErrors] = useState([]);
  
   const validateName = () => {
     let errors = [];
@@ -34,23 +34,6 @@ const OrderForm = ({ onSuccess }) => {
       setIsNameValid(true)
     };
     setNameErrors(errors);
-    return errors;
-  }
- 
-  const validateContact = () => {
-    let errors = [];
-    const phoneRegEx = /^[\+]?[0-9\s]{0,4}[(]?[0-9]{2,3}[)]?[-\s0-9]+$/im;
- 
-    if (contact.length === 0) {
-      errors.push('Введите номер телефона')
-    } else if (!phoneRegEx.test(contact)) {
-      errors.push('Номер телефона введён не верно.')
-    };
- 
-    if (errors.length === 0) {
-      setIsContactValid(true)
-    };
-    setContactErrors(errors);
     return errors;
   }
 
@@ -71,11 +54,27 @@ const OrderForm = ({ onSuccess }) => {
     return errors;
   }
 
+  const validatePassword = () => {
+    let errors = [];
+
+    if (password.length === 0) {
+      errors.push('Введите пароль.')
+    } else if (password.length < 6) {
+      errors.push('Пароль должен содержить минимум 6 символов.')
+    };
+ 
+    if (errors.length === 0) {
+      setIsPasswordValid(true)
+    };
+    setPasswordErrors(errors);
+    return errors;
+  }
+
   const validateForm = () => {
     const validations = [
       validateName(),
-      validateContact(),
-      validateEmail()
+      validateEmail(),
+      validatePassword()
     ];
     return validations.flat().length === 0;
   };
@@ -85,21 +84,20 @@ const OrderForm = ({ onSuccess }) => {
     setIsNameValid(false);
   }
 
-  const resetContactValidator = () => {
-    setContactErrors([]);
-    setIsContactValid(false);
-  }
-
   const resetEmailValidator = () => {
     setEmailErrors([]);
     setIsEmailValid(false);
   }
 
-  const customerData = {
+  const resetPasswordValidator = () => {
+    setPasswordErrors([]);
+    setIsPasswordValid(false);
+  }
+
+  const userData = {
     name: name,
-    contact: contact,
     email: email,
-    selected: selected
+    password: password
   }
 
   const handleSubmit = (e) => {
@@ -107,15 +105,18 @@ const OrderForm = ({ onSuccess }) => {
     const isFormValid = validateForm();
 
     if (isFormValid) {
-      onSuccess(customerData);
+      setSuccess(true);
+      register(userData);
+
+      console.log(userData);
     }
   };
 
   return (
     <div className={styles.container}>
-      <h2>Введите данные для заказа:</h2>
-      <form className={styles.orderForm} onSubmit={handleSubmit}>
-        <div className={styles.orderFormInput}>
+      <h2>Введите данные для регистрации:</h2>
+      <form className={styles.registrationForm} onSubmit={handleSubmit}>
+        <div className={styles.registrationFormInput}>
           <label>Ваше ФИО:</label>
           <input
             className={
@@ -136,7 +137,7 @@ const OrderForm = ({ onSuccess }) => {
             {nameErrors}
           </div>)}
         </div>
-        <div className={styles.orderFormInput}>
+        <div className={styles.registrationFormInput}>
           <label>E-mail:</label>
           <input
             className={
@@ -153,41 +154,34 @@ const OrderForm = ({ onSuccess }) => {
             onBlur={validateEmail}
           />
         </div>
-        <div className={styles.orderFormInput}>
-          <label>Номер телефона:</label>
+        <div className={styles.registrationFormInput}>
+          <label>Ваедите пароль:</label>
           <input 
             className={
               cx(styles.input, 
-              {[styles.inputError]: !!contactErrors.length}, 
-              {[styles.inputSuccess]: isContactValid})
+              {[styles.inputError]: !!passwordErrors.length}, 
+              {[styles.inputSuccess]: isPasswordValid})
             }
-            type="text"
-            name="contact"
-            placeholder='Телефон'
-            value={contact}
-            onChange={e => setContact(e.target.value)}
-            onFocus={resetContactValidator}
-            onBlur={validateContact}
+            type="password"
+            name="password"
+            placeholder="Пароль"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            onFocus={resetPasswordValidator}
+            onBlur={validatePassword}
           />
-          {(contactErrors.length > 0) && 
+          {(passwordErrors.length > 0) && 
             (<div className={styles.errors}>
-              {contactErrors}
+              {passwordErrors}
             </div>)}
         </div>
-        <div className={styles.orderFormSelect}>
-          <label>Способ оплаты:</label>
-          <select onChange={handleChange}>
-            <option value="Безналичный расчет">Безналичный расчет</option>
-            <option value="Наличный расчет">Наличный расчет</option>
-            <option  value="Наложенный платеж">Наложенный платеж</option>
-          </select>
-        </div>
         <div>
-          <button type="submit" className={styles.orderFormBtn}>Сделать заказ</button>
+          <button type="submit" className={styles.registrationFormBtn}>ЗАРЕГИСТРИРОВАТЬСЯ</button>
         </div>
       </form>
+      {success && <Navigate to="/sign-in" replace={true}/>}
     </div>
   );
 }
 
-export default OrderForm;
+export default RegistrationForm;
