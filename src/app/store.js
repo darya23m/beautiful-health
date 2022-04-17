@@ -5,6 +5,7 @@ import cartSlice from '../features/cart/cart-slice';
 import infoSlice from '../features/pages-data/info-slice';
 import contactsSlice from '../features/pages-data/contacts-slice';
 import { ordersApi } from '../features/orders/ordersApi';
+import { usersApi } from '../features/users/usersApi';
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     info: infoSlice.reducer,
     contacts: contactsSlice.reducer,
     [ordersApi.reducerPath]: ordersApi.reducer,
+    [usersApi.reducerPath]: usersApi.reducer,
   },
-  middleware: (getDefaultMiddlware) => getDefaultMiddlware().concat(ordersApi.middleware)
+  middleware: (getDefaultMiddlware) => getDefaultMiddlware().concat(ordersApi.middleware).concat(usersApi.middleware)
 });

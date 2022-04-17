@@ -42,6 +42,7 @@ const AppLayout = () => {
             <Menu.Item as={NavLink} to="/info">Доставка и оплата</Menu.Item>
             <Menu.Item as={NavLink} to="/contacts">Контакты</Menu.Item>
             <Menu.Item as={NavLink} to="/orders-list">Ваши заказы</Menu.Item>
+            <Menu.Item as={NavLink} to="/profile">Кабинет</Menu.Item>
           </Menu.Menu>
         </Container>
       </Menu>
